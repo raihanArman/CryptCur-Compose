@@ -1,5 +1,6 @@
 package com.example.cryptcur_compose.presentation.coin_detail
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -24,16 +25,19 @@ class CoinDetailViewModel @Inject constructor(
     val state: State<CoinDetailState> = _state
 
     init {
+        Log.d("LKevin", "CoinDetailViewModel: init")
         savedStateHandle.get<String>(Constants.PARAM_COIN_ID)?.let { coinId->
+            Log.d("LKevin", "CoinDetailViewModel: coinId $coinId")
             getCoin(coinId = coinId)
         }
     }
 
     private fun getCoin(coinId: String){
-        getCoinUseCase(coidId = coinId).onEach {result ->
+        getCoinUseCase(coinId = coinId).onEach {result ->
             when(result){
                 is Resource.Success ->{
-                    _state.value = CoinDetailState(coins = result.data)
+                    Log.d("LKevin", "getCoin: ${result.data?.name}")
+                    _state.value = CoinDetailState(coin = result.data)
                 }
                 is Resource.Error ->{
                     _state.value = CoinDetailState(error = result.message ?: "An unexpected error occured")
